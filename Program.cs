@@ -7,6 +7,7 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Exceptions;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace bot
 {
@@ -23,7 +24,187 @@ namespace bot
                 {
                     case UpdateType.Message:
                         {
-                            Console.WriteLine("Пришло сообщение!");
+                            var message = update.Message;
+
+                            var user = message.From;
+
+                            Console.WriteLine($"{user.FirstName} ({user.Id}) написал сообщение: {message.Text}");
+
+                            var chat = message.Chat;
+
+                            switch (message.Type)
+                            {
+                                case MessageType.Text:
+                                    {
+                                        if (message.Text == "/start")
+                                        {
+
+                                            var replyKeyboard = new ReplyKeyboardMarkup(
+                                                new List<KeyboardButton[]>()
+                                                {
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("Бронирование стирки"),
+                                            new KeyboardButton("График дежурств")
+                                        }
+                                        })
+                                            {
+                                                ResizeKeyboard = true,
+                                            };
+
+                                        await botClient.SendTextMessageAsync(
+                                                chat.Id,
+                                                "Выберите функцию",
+                                                replyMarkup: replyKeyboard); // опять передаем клавиатуру в параметр replyMarkup
+
+                                            return;
+                                        }
+
+                                        if (message.Text == "Бронирование стирки")
+                                        {
+                                            var replyKeyboard = new ReplyKeyboardMarkup(
+                                                new List<KeyboardButton[]>()
+                                                {
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("Создание"),
+                                            new KeyboardButton("Изменение"),
+                                            new KeyboardButton("Удаление")
+                                        }
+                                        })
+                                            {
+                                                ResizeKeyboard = true,
+                                            };
+
+                                            await botClient.SendTextMessageAsync(
+                                                chat.Id,
+                                                "Бронирование стиральной машины",
+                                                replyMarkup: replyKeyboard); 
+
+                                            return;
+                                        }
+
+                                        if (message.Text == "Создание")
+                                        {
+                                            var replyKeyboard = new ReplyKeyboardMarkup(
+                                                new List<KeyboardButton[]>()
+                                                {
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("Понедельник"),
+                                        },
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("Вторник"),
+                                            new KeyboardButton("Среда"),
+                                        },
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("Сетверг"),
+                                            new KeyboardButton("Пятница"),
+                                        },
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("Суббота"),
+                                            new KeyboardButton("Воскресенье")
+                                        }
+                                        })
+                                            {
+                                                ResizeKeyboard = true,
+                                            };
+
+                                            await botClient.SendTextMessageAsync(
+                                                chat.Id,
+                                                "Создание бронирования. Выберите день",
+                                                replyMarkup: replyKeyboard);
+
+                                            return;
+                                        }
+
+                                        if (message.Text == "Понедельник" || message.Text == "Вторник" || message.Text == "Среда" || message.Text == "Четверг" || message.Text == "Пятница" || message.Text == "Суббота" || message.Text == "Воскресенье")
+                                        {
+                                            var replyKeyboard = new ReplyKeyboardMarkup(
+                                                new List<KeyboardButton[]>()
+                                                {
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("Утро"),
+                                        },
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("День"),
+                                            new KeyboardButton("Вечер"),
+                                        }
+                                        })
+                                            {
+                                                ResizeKeyboard = true,
+                                            };
+
+                                            await botClient.SendTextMessageAsync(
+                                                chat.Id,
+                                                "Создание бронирования. Выберите время суток",
+                                                replyMarkup: replyKeyboard);
+
+                                            return;
+                                        }
+
+                                        if (message.Text == "Утро")
+                                        {
+                                            var replyKeyboard = new ReplyKeyboardMarkup(
+                                                new List<KeyboardButton[]>()
+                                                {
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("1:00"),
+                                            new KeyboardButton("2:00"),
+                                        },
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("3:00"),
+                                            new KeyboardButton("4:00"),
+                                        },
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("5:00"),
+                                            new KeyboardButton("6:00"),
+                                        },
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("7:00"),
+                                            new KeyboardButton("8:00"),
+                                        }
+                                        })
+                                            {
+                                                ResizeKeyboard = true,
+                                            };
+
+                                            await botClient.SendTextMessageAsync(
+                                                chat.Id,
+                                                "Создание бронирования. Выберите время суток",
+                                                replyMarkup: replyKeyboard);
+
+                                            return;
+                                        }
+
+                                        if (message.Text == "График дежурств")
+                                        {
+                                            await botClient.SendTextMessageAsync(
+                                                chat.Id,
+                                                "Понедельник: 300 \n" +
+                                                "Вторник: 301 \n" +
+                                                "Среда: 307 \n" +
+                                                "Четверг: 302 \n"+
+                                                "Пятница: 303 \n" +
+                                                "Суббота: 304 \n" +
+                                                "Воскресенье: 305 \n"
+                                                );
+                                            return;
+                                        }
+
+                                        return;
+                                    }
+                            }
+
                             return;
                         }
                 }
@@ -49,7 +230,7 @@ namespace bot
         static async Task Main()
         {
             _botClient = new TelegramBotClient("6943456714:AAEehGSa1zFNTPSLNNC4kzcCqJiOIRgSsdc");
-            _receiverOptions = new ReceiverOptions { AllowedUpdates = new[] { UpdateType.Message }, ThrowPendingUpdates = true };
+            _receiverOptions = new ReceiverOptions { AllowedUpdates = new[] { UpdateType.Message, UpdateType.CallbackQuery }, ThrowPendingUpdates = true };
             using var cts = new CancellationTokenSource();
 
             _botClient.StartReceiving(UpdateHandler, ErrorHandler, _receiverOptions, cts.Token);
