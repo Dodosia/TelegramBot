@@ -115,7 +115,7 @@ namespace bot
 
                                             await botClient.SendTextMessageAsync(
                                                 chat.Id,
-                                                "Создание бронирования. Выберите день",
+                                                "Выберите день",
                                                 replyMarkup: replyKeyboard);
 
                                             return;
@@ -142,7 +142,7 @@ namespace bot
 
                                             await botClient.SendTextMessageAsync(
                                                 chat.Id,
-                                                "Создание бронирования. Выберите время суток",
+                                                "Выберите время суток",
                                                 replyMarkup: replyKeyboard);
 
                                             return;
@@ -180,7 +180,7 @@ namespace bot
 
                                             await botClient.SendTextMessageAsync(
                                                 chat.Id,
-                                                "Создание бронирования. Выберите время суток",
+                                                "Выберите время",
                                                 replyMarkup: replyKeyboard);
 
                                             return;
@@ -201,10 +201,45 @@ namespace bot
                                             return;
                                         }
 
+                                        if (message.Text == "Изменение")
+                                        {
+                                            var replyKeyboard = new ReplyKeyboardMarkup(
+                                                new List<KeyboardButton[]>()
+                                                {
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("Понедельник"),
+                                        },
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("Вторник"),
+                                            new KeyboardButton("Среда"),
+                                        },
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("Сетверг"),
+                                            new KeyboardButton("Пятница"),
+                                        },
+                                        new KeyboardButton[]
+                                        {
+                                            new KeyboardButton("Суббота"),
+                                            new KeyboardButton("Воскресенье")
+                                        }
+                                        })
+                                            {
+                                                ResizeKeyboard = true,
+                                            };
+
+                                            await botClient.SendTextMessageAsync(
+                                                chat.Id,
+                                                "Выберите день",
+                                                replyMarkup: replyKeyboard);
+
+                                            return;
+                                        }
                                         return;
                                     }
                             }
-
                             return;
                         }
                 }
