@@ -237,6 +237,16 @@ namespace bot
 
                                             return;
                                         }
+
+                                        if (message.Text == "Удаление")
+                                        {
+
+                                            await botClient.SendTextMessageAsync(
+                                                chat.Id,
+                                                "Бронирование успешно удалено!");
+
+                                            return;
+                                        }
                                         return;
                                     }
                             }
