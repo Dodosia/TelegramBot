@@ -8,6 +8,8 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types.ReplyMarkups;
+using MongoDB.Driver;
+using MongoDB.Bson;
 
 namespace bot
 {
@@ -15,9 +17,18 @@ namespace bot
     {
         private static ITelegramBotClient _botClient;
         private static ReceiverOptions _receiverOptions;
-
+  
         private static async Task UpdateHandler(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
+            MongoClient client = new MongoClient("mongodb://botUserAdmin:password@192.168.0.108:27017/?authSource=admin");
+
+            try
+            {
+                var result = client.GetDatabase("admin").RunCommand<BsonDocument>(new BsonDocument("ping", 1));
+                Console.WriteLine("Pinged your deployment. You successfully connected to MongoDB!");
+            }
+            catch (Exception ex) { Console.WriteLine(ex); }
+
             try
             {
                 switch (update.Type)
@@ -39,8 +50,7 @@ namespace bot
                                         if (message.Text == "/start")
                                         {
 
-                                            var replyKeyboard = new ReplyKeyboardMarkup(
-                                                new List<KeyboardButton[]>()
+                                            var replyKeyboard = new ReplyKeyboardMarkup(new List<KeyboardButton[]>()
                                                 {
                                         new KeyboardButton[]
                                         {
@@ -52,10 +62,22 @@ namespace bot
                                                 ResizeKeyboard = true,
                                             };
 
-                                        await botClient.SendTextMessageAsync(
+                                            using (var cursor = await client.ListDatabasesAsync())
+                                            {
+                                                var databaseNames = cursor.ToList();
+                                                foreach (string databaseName in databaseNames)
+                                                {
+                                                    await botClient.SendTextMessageAsync(
+                                                chat.Id,
+                                                databaseName,
+                                                replyMarkup: replyKeyboard);
+                                                }
+                                            }
+
+                                            await botClient.SendTextMessageAsync(
                                                 chat.Id,
                                                 "Выберите функцию",
-                                                replyMarkup: replyKeyboard); // опять передаем клавиатуру в параметр replyMarkup
+                                                replyMarkup: replyKeyboard);
 
                                             return;
                                         }
@@ -274,6 +296,7 @@ namespace bot
 
         static async Task Main()
         {
+
             _botClient = new TelegramBotClient("6943456714:AAEehGSa1zFNTPSLNNC4kzcCqJiOIRgSsdc");
             _receiverOptions = new ReceiverOptions { AllowedUpdates = new[] { UpdateType.Message, UpdateType.CallbackQuery }, ThrowPendingUpdates = true };
             using var cts = new CancellationTokenSource();
